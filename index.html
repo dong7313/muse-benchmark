@@ -130,9 +130,17 @@
     padding: 8px 10px; font-weight: 600; font-size: 12px; color: var(--ink-soft);
     text-transform: none; letter-spacing: 0;
   }
+  /* Let header text wrap to a second line instead of truncating. */
+  .tabulator .tabulator-header .tabulator-col .tabulator-col-content,
+  .tabulator .tabulator-header .tabulator-col .tabulator-col-title {
+    white-space: normal !important; overflow: visible !important; text-overflow: clip !important;
+    line-height: 1.25; word-break: keep-all;
+  }
   .tabulator .tabulator-header .tabulator-col.tabulator-col-group .tabulator-col-group-cols { border-top: 1px solid var(--line); }
   .tabulator .tabulator-header .tabulator-col.tabulator-col-group > .tabulator-col-content {
-    text-align: center; color: var(--ink); font-weight: 700; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+    text-align: center; color: var(--ink); font-weight: 700; font-size: 11px;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 6px 4px;
   }
   .tabulator .tabulator-row { border-bottom: 1px solid var(--line); }
   .tabulator .tabulator-row:hover { background: var(--hover); }
@@ -297,29 +305,29 @@ async function main() {
       columns: [ numCell("sandbox", { title: "Sandbox", width: 100 }) ],
     },
     {
-      title: "Stage 2 · Geometric Validity",
+      title: "Stage 2 — Geometry",
       columns: [
-        numCell("watertight",    { title: "Watertight",    width: 95 }),
+        numCell("watertight",    { title: "Watertight",    width: 100 }),
         numCell("manifold",      { title: "Manifold",      width: 95 }),
-        numCell("self_int_free", { title: "Self-Int Free", width: 105 }),
-        numCell("overlap_free",  { title: "Overlap Free",  width: 105 }),
-        numCell("geom_valid",    { title: "Overall",       width: 90, final: true }),
+        numCell("self_int_free", { title: "Self-Int Free", width: 95 }),
+        numCell("overlap_free",  { title: "Overlap Free",  width: 95 }),
+        numCell("geom_valid",    { title: "Overall",       width: 95, final: true }),
       ],
     },
     {
-      title: "Stage 3 · Design Intent Alignment",
+      title: "Stage 3 — Design Intent",
       columns: [
         numCell("functionality",     { title: "Functionality",     width: 115 }),
         numCell("manufacturability", { title: "Manufacturability", width: 145 }),
         numCell("assemblability",    { title: "Assemblability",    width: 130 }),
-        numCell("final",             { title: "Final ↓",           width: 90, final: true }),
+        numCell("final",             { title: "Final ↓",           width: 95, final: true }),
       ],
     },
     {
       title: "Coverage",
       columns: [
-        { title: "Judged", field: "judged", hozAlign: "right", cssClass: "num", width: 75, sorter: "number" },
-        { title: "Cases",  field: "cases",  hozAlign: "right", cssClass: "num", width: 70, sorter: "number" },
+        { title: "Judged", field: "judged", hozAlign: "right", cssClass: "num", width: 80, sorter: "number" },
+        { title: "Cases",  field: "cases",  hozAlign: "right", cssClass: "num", width: 75, sorter: "number" },
       ],
     },
   ];
@@ -327,7 +335,7 @@ async function main() {
   const table = new Tabulator("#leaderboard", {
     data: rows,
     columns,
-    layout: "fitDataStretch",
+    layout: "fitData",
     columnHeaderVertAlign: "bottom",
     initialSort: [{ column: "final", dir: "desc" }],
     height: "auto",
