@@ -140,8 +140,13 @@
   .tabulator .tabulator-header .tabulator-col.tabulator-col-group > .tabulator-col-content {
     text-align: center; color: var(--ink); font-weight: 700; font-size: 12px;
     letter-spacing: 0.10em; text-transform: uppercase;
-    padding: 14px 8px 12px;
+    padding: 22px 8px 18px;
     line-height: 1.4;
+  }
+  /* Stop horizontal scroll from spilling into browser back/forward navigation. */
+  .tabulator .tabulator-tableholder,
+  #leaderboard, .table-wrap, body, html {
+    overscroll-behavior-x: contain;
   }
   .tabulator .tabulator-row { border-bottom: 1px solid var(--line); }
   .tabulator .tabulator-row:hover { background: var(--hover); }
@@ -302,11 +307,11 @@ async function main() {
       },
     },
     {
-      title: "Stage 1",
+      title: "Stage 1 — Code Check",
       columns: [ numCell("sandbox", { title: "Sandbox", width: 100 }) ],
     },
     {
-      title: "Stage 2 — Geometry",
+      title: "Stage 2 — Geometry Check",
       columns: [
         numCell("watertight",    { title: "Watertight",    width: 100 }),
         numCell("manifold",      { title: "Manifold",      width: 95 }),
@@ -316,19 +321,12 @@ async function main() {
       ],
     },
     {
-      title: "Stage 3 — Design Intent",
+      title: "Stage 3 — Design Intent Alignment",
       columns: [
         numCell("functionality",     { title: "Functionality",     width: 115 }),
         numCell("manufacturability", { title: "Manufacturability", width: 145 }),
         numCell("assemblability",    { title: "Assemblability",    width: 130 }),
         numCell("final",             { title: "Final ↓",           width: 95, final: true }),
-      ],
-    },
-    {
-      title: "Coverage",
-      columns: [
-        { title: "Judged", field: "judged", hozAlign: "right", cssClass: "num", width: 80, sorter: "number" },
-        { title: "Cases",  field: "cases",  hozAlign: "right", cssClass: "num", width: 75, sorter: "number" },
       ],
     },
   ];
