@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>MUSE Leaderboard</title>
+<meta name="description" content="MUSE — Multimodal Understanding of Spatial Engineering: a benchmark for LLM-generated CadQuery code from natural-language design specs." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
+
+<link href="https://unpkg.com/tabulator-tables@6.2.5/dist/css/tabulator_simple.min.css" rel="stylesheet" />
+<script  src="https://unpkg.com/tabulator-tables@6.2.5/dist/js/tabulator.min.js"></script>
+
+<style>
+  :root {
+    --bg:        #fafafa;
+    --panel:     #ffffff;
+    --ink:       #111827;
+    --ink-soft:  #4b5563;
+    --muted:     #9ca3af;
+    --line:      #e5e7eb;
+    --accent:    #ea580c;   /* MUSE orange */
+    --accent-2:  #4338ca;
+    --closed:    #b45309;
+    --open:      #047857;
+    --hover:     #fff7ed;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.55;
+  }
+  a { color: var(--accent-2); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  code { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.92em; }
+
+  /* ---------- header ---------- */
+  header {
+    background: var(--panel);
+    border-bottom: 1px solid var(--line);
+  }
+  .header-inner {
+    max-width: 1200px; margin: 0 auto; padding: 28px 24px 20px;
+    display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px;
+  }
+  .title .breadcrumb { margin: 0 0 8px; font-size: 13px; color: var(--ink-soft); }
+  .title .breadcrumb a { color: var(--ink-soft); }
+  .title .breadcrumb a:hover { color: var(--accent); }
+  .title h1 {
+    margin: 0; font-size: 28px; font-weight: 700; letter-spacing: -0.01em;
+  }
+  .title h1 .em { color: var(--accent); }
+  .subtitle {
+    margin: 4px 0 0; color: var(--ink-soft); font-size: 14.5px;
+  }
+  .links {
+    display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+  }
+  .pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 12px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--panel);
+    font-size: 13px;
+    color: var(--ink);
+    transition: all .15s ease;
+  }
+  .pill:hover { background: var(--hover); border-color: var(--accent); text-decoration: none; color: var(--accent); }
+  .pill svg { width: 14px; height: 14px; }
+
+  /* ---------- intro band ---------- */
+  .intro {
+    max-width: 1200px; margin: 0 auto; padding: 24px;
+  }
+  .stage-strip {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+    margin-top: 12px;
+  }
+  .stage-card {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .stage-card .label { font-size: 11px; font-weight: 600; color: var(--accent); letter-spacing: 0.08em; text-transform: uppercase; }
+  .stage-card .name  { font-size: 15px; font-weight: 600; margin-top: 4px; color: var(--ink); }
+  .stage-card .desc  { font-size: 13px; color: var(--ink-soft); margin-top: 4px; }
+  @media (max-width: 740px) { .stage-strip { grid-template-columns: 1fr; } }
+
+  /* ---------- controls ---------- */
+  .controls {
+    max-width: 1200px; margin: 0 auto; padding: 0 24px 12px;
+    display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between;
+  }
+  .controls-left { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .seg {
+    display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--panel);
+  }
+  .seg button {
+    border: none; background: transparent; padding: 7px 14px; cursor: pointer;
+    font: 500 13px 'Inter', sans-serif; color: var(--ink-soft);
+    transition: background .12s ease, color .12s ease;
+  }
+  .seg button + button { border-left: 1px solid var(--line); }
+  .seg button:hover { background: var(--hover); color: var(--ink); }
+  .seg button.active { background: var(--accent); color: white; }
+  input[type=search] {
+    border: 1px solid var(--line); border-radius: 8px;
+    padding: 7px 12px; font: 400 13px 'Inter', sans-serif;
+    width: 220px; background: var(--panel);
+  }
+  input[type=search]:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(234,88,12,0.12); }
+  .controls-right { font-size: 12px; color: var(--muted); }
+
+  /* ---------- table ---------- */
+  .table-wrap {
+    max-width: 1200px; margin: 0 auto 32px; padding: 0 24px;
+  }
+  #leaderboard {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 12px; overflow: hidden;
+    font-size: 13.5px;
+  }
+  /* Tabulator overrides */
+  .tabulator { border: none; background: var(--panel); font-family: 'Inter', sans-serif; }
+  .tabulator .tabulator-header { background: #f3f4f6; border-bottom: 1px solid var(--line); }
+  .tabulator .tabulator-header .tabulator-col {
+    background: transparent; border-right: 1px solid var(--line);
+    padding: 8px 10px; font-weight: 600; font-size: 12px; color: var(--ink-soft);
+    text-transform: none; letter-spacing: 0;
+  }
+  /* Let header text wrap to a second line instead of truncating. */
+  .tabulator .tabulator-header .tabulator-col .tabulator-col-content,
+  .tabulator .tabulator-header .tabulator-col .tabulator-col-title {
+    white-space: normal !important; overflow: visible !important; text-overflow: clip !important;
+    line-height: 1.25; word-break: keep-all;
+  }
+  .tabulator .tabulator-header .tabulator-col.tabulator-col-group .tabulator-col-group-cols { border-top: 1px solid var(--line); }
+  .tabulator .tabulator-header .tabulator-col.tabulator-col-group > .tabulator-col-content {
+    text-align: center; color: var(--ink); font-weight: 700; font-size: 12px;
+    letter-spacing: 0.10em; text-transform: uppercase;
+    padding: 22px 8px 18px;
+    line-height: 1.4;
+  }
+  /* Stop horizontal scroll from spilling into browser back/forward navigation. */
+  .tabulator .tabulator-tableholder,
+  #leaderboard, .table-wrap, body, html {
+    overscroll-behavior-x: contain;
+  }
+  .tabulator .tabulator-row { border-bottom: 1px solid var(--line); }
+  .tabulator .tabulator-row:hover { background: var(--hover); }
+  .tabulator .tabulator-row .tabulator-cell {
+    border-right: 1px solid #f3f4f6; padding: 9px 10px;
+    font-variant-numeric: tabular-nums;
+  }
+  .tabulator .tabulator-row .tabulator-cell.num { text-align: right; font-family: 'JetBrains Mono', monospace; font-size: 13px; }
+  .tabulator .tabulator-row .tabulator-cell.best { font-weight: 700; color: var(--accent); }
+  .tabulator .tabulator-row .tabulator-cell.final-col { background: rgba(67,56,202,0.04); font-weight: 600; }
+  .tabulator .tabulator-row .tabulator-cell.best.final-col { color: var(--accent); }
+  .badge {
+    display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 600;
+  }
+  .badge.closed { background: rgba(180,83,9,0.10); color: var(--closed); }
+  .badge.open   { background: rgba(4,120,87,0.10); color: var(--open); }
+  .rank {
+    display: inline-block; min-width: 22px; text-align: center;
+    color: var(--muted); font-variant-numeric: tabular-nums;
+  }
+  .rank.top1 { color: var(--accent); font-weight: 700; }
+  .rank.top2 { color: var(--ink); font-weight: 600; }
+  .rank.top3 { color: var(--ink-soft); font-weight: 600; }
+  .model-name { font-weight: 600; color: var(--ink); }
+
+  /* ---------- footer ---------- */
+  footer {
+    max-width: 1200px; margin: 0 auto; padding: 24px;
+    color: var(--muted); font-size: 12.5px; border-top: 1px solid var(--line);
+  }
+  footer code { background: #f3f4f6; padding: 1px 6px; border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="title">
+      <p class="breadcrumb"><a href="./">← MUSE home</a></p>
+      <h1>🛠️ <span class="em">MUSE</span> Leaderboard</h1>
+      <p class="subtitle">Multimodal Understanding of Spatial Engineering — LLM-generated CadQuery from natural-language design specs</p>
+    </div>
+    <nav class="links">
+      <a class="pill" href="https://huggingface.co/datasets/dongxiaoyu/MUSE" target="_blank" rel="noopener">🤗 Dataset</a>
+      <a class="pill" href="https://anonymous.4open.science/r/muse-FD4D" target="_blank" rel="noopener">📄 Code</a>
+      <a class="pill" id="paper-link" href="#" target="_blank" rel="noopener">📑 Paper</a>
+    </nav>
+  </div>
+</header>
+
+<section class="intro">
+  <div class="stage-strip">
+    <div class="stage-card">
+      <div class="label">Stage 1 · Code Check</div>
+      <div class="name">Sandbox Success</div>
+      <div class="desc">Did the generated CadQuery script execute without error?</div>
+    </div>
+    <div class="stage-card">
+      <div class="label">Stage 2 · Geometry Check</div>
+      <div class="name">Geometric Validity</div>
+      <div class="desc">All four OCCT checks pass: watertight, manifold, self-intersection free, overlap free.</div>
+    </div>
+    <div class="stage-card">
+      <div class="label">Stage 3 · Design Intent</div>
+      <div class="name">VLM Judge (Gemini-3.1-Pro)</div>
+      <div class="desc">Three pillars: Functionality · Manufacturability · Assemblability. Failed upstream ⇒ all Stage 3 forced to 0.</div>
+    </div>
+  </div>
+</section>
+
+<section class="controls">
+  <div class="controls-left">
+    <div class="seg" id="family-seg">
+      <button data-family="all"    class="active">All</button>
+      <button data-family="closed">🔒 Closed-Source</button>
+      <button data-family="open">🌐 Open-Source</button>
+    </div>
+    <input type="search" id="search" placeholder="Search model…" autocomplete="off" />
+  </div>
+  <div class="controls-right" id="meta">Loading…</div>
+</section>
+
+<div class="table-wrap">
+  <div id="leaderboard"></div>
+</div>
+
+<footer>
+  Built with <a href="https://tabulator.info/" target="_blank" rel="noopener">Tabulator.js</a> (MIT) · data regenerated from <code>results/bench_evaluate_gemini/runs/</code> via <code>scripts/build_site_data.py</code>.
+  Numbers are percentages over the full case set; sandbox-failed samples count as 0 in Stage 3.
+</footer>
+
+<script>
+async function main() {
+  const r = await fetch("./leaderboard.json?ts=" + Date.now());
+  const payload = await r.json();
+  const rows = payload.rows;
+
+  // Compute per-column best across all models (single overall winner per metric).
+  const NUM_COLS = ["sandbox","watertight","manifold","self_int_free","overlap_free","geom_valid",
+                    "functionality","manufacturability","assemblability","final"];
+  const bestAll = {};
+  NUM_COLS.forEach(c => {
+    bestAll[c] = rows.length ? Math.max(...rows.map(r => r[c])) : null;
+  });
+
+  // Single global ranking: sort by final desc, assign ranks 1..N.
+  rows.sort((a, b) => b.final - a.final);
+  rows.forEach((r, i) => { r._rank = i + 1; });
+
+  // Helper: numeric cell with best-highlight + optional final-col tint.
+  const numCell = (col, opts = {}) => ({
+    title: opts.title || col,
+    field: col,
+    hozAlign: "right",
+    headerHozAlign: "right",
+    cssClass: "num" + (opts.final ? " final-col" : ""),
+    sorter: "number",
+    width: opts.width || undefined,
+    formatter: (cell) => {
+      const v = cell.getValue();
+      if (v == null || v === "") return "—";
+      const best = bestAll[col];
+      const isBest = best != null && Math.abs(v - best) < 1e-6;
+      cell.getElement().classList.toggle("best", isBest);
+      return v.toFixed(2);
+    },
+  });
+
+  // Columns with grouped headers (Stage 1 / Stage 2 / Stage 3).
+  const columns = [
+    {
+      title: "#",
+      field: "_rank",
+      width: 52,
+      hozAlign: "center",
+      headerSort: false,
+      formatter: (cell) => {
+        const v = cell.getValue();
+        const cls = v === 1 ? "top1" : v === 2 ? "top2" : v === 3 ? "top3" : "";
+        return `<span class="rank ${cls}">${v}</span>`;
+      },
+    },
+    {
+      title: "Model", field: "model", minWidth: 200, frozen: true,
+      formatter: (cell) => `<span class="model-name">${cell.getValue()}</span>`,
+    },
+    {
+      title: "Family", field: "family", width: 130, hozAlign: "center",
+      formatter: (cell) => {
+        const v = cell.getValue();
+        return `<span class="badge ${v}">${v === "closed" ? "🔒 Closed" : "🌐 Open"}</span>`;
+      },
+    },
+    {
+      title: "Stage 1",
+      columns: [ numCell("sandbox", { title: "Sandbox", width: 100 }) ],
+    },
+    {
+      title: "Stage 2 — Geometry Check",
+      columns: [
+        numCell("watertight",    { title: "Watertight",    width: 100 }),
+        numCell("manifold",      { title: "Manifold",      width: 95 }),
+        numCell("self_int_free", { title: "Self-Int Free", width: 95 }),
+        numCell("overlap_free",  { title: "Overlap Free",  width: 95 }),
+        numCell("geom_valid",    { title: "Overall",       width: 95, final: true }),
+      ],
+    },
+    {
+      title: "Stage 3 — Design Intent Alignment",
+      columns: [
+        numCell("functionality",     { title: "Functionality",     width: 115 }),
+        numCell("manufacturability", { title: "Manufacturability", width: 145 }),
+        numCell("assemblability",    { title: "Assemblability",    width: 130 }),
+        numCell("final",             { title: "Final ↓",           width: 95, final: true }),
+      ],
+    },
+  ];
+
+  const table = new Tabulator("#leaderboard", {
+    data: rows,
+    columns,
+    layout: "fitData",
+    columnHeaderVertAlign: "bottom",
+    initialSort: [{ column: "final", dir: "desc" }],
+    height: "auto",
+    placeholder: "No models match the current filter.",
+  });
+
+  // Family segmented filter
+  const seg = document.getElementById("family-seg");
+  seg.addEventListener("click", (e) => {
+    const btn = e.target.closest("button"); if (!btn) return;
+    [...seg.children].forEach(b => b.classList.toggle("active", b === btn));
+    const f = btn.dataset.family;
+    table.setFilter(f === "all" ? [] : [{ field: "family", type: "=", value: f }]);
+  });
+
+  // Search box
+  const search = document.getElementById("search");
+  search.addEventListener("input", () => {
+    const q = search.value.trim().toLowerCase();
+    table.setFilter((data) => {
+      const familyBtn = document.querySelector("#family-seg button.active").dataset.family;
+      const familyOk = familyBtn === "all" || data.family === familyBtn;
+      const qOk      = !q || data.model.toLowerCase().includes(q);
+      return familyOk && qOk;
+    });
+  });
+
+  // Footer metadata
+  document.getElementById("meta").textContent =
+    `Judge: ${payload.judge} · ${rows.length} models · ${payload.n_cases} cases · updated ${payload.updated}`;
+}
+
+main().catch((e) => {
+  document.getElementById("leaderboard").innerHTML =
+    `<div style="padding:40px;text-align:center;color:#b91c1c">Failed to load leaderboard data: ${e.message}</div>`;
+  console.error(e);
+});
+</script>
+</body>
+</html>
