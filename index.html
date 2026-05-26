@@ -243,23 +243,17 @@ async function main() {
   const payload = await r.json();
   const rows = payload.rows;
 
-  // Compute per-column best within each family (for bolding).
-  const FAMILIES = ["closed", "open"];
+  // Compute per-column best across all models (single overall winner per metric).
   const NUM_COLS = ["sandbox","watertight","manifold","self_int_free","overlap_free","geom_valid",
                     "functionality","manufacturability","assemblability","final"];
-  const bestByFamily = {};
-  FAMILIES.forEach(f => {
-    bestByFamily[f] = {};
-    const fr = rows.filter(r => r.family === f);
-    NUM_COLS.forEach(c => {
-      bestByFamily[f][c] = fr.length ? Math.max(...fr.map(r => r[c])) : null;
-    });
+  const bestAll = {};
+  NUM_COLS.forEach(c => {
+    bestAll[c] = rows.length ? Math.max(...rows.map(r => r[c])) : null;
   });
 
-  // Initial sort: by family then final desc, with rank within family.
-  rows.sort((a,b) => (a.family === b.family ? b.final - a.final : (a.family === "closed" ? -1 : 1)));
-  const rankByFamily = {closed: 0, open: 0};
-  rows.forEach(r => { rankByFamily[r.family]++; r._rank = rankByFamily[r.family]; });
+  // Single global ranking: sort by final desc, assign ranks 1..N.
+  rows.sort((a, b) => b.final - a.final);
+  rows.forEach((r, i) => { r._rank = i + 1; });
 
   // Helper: numeric cell with best-highlight + optional final-col tint.
   const numCell = (col, opts = {}) => ({
@@ -273,8 +267,7 @@ async function main() {
     formatter: (cell) => {
       const v = cell.getValue();
       if (v == null || v === "") return "—";
-      const row = cell.getRow().getData();
-      const best = bestByFamily[row.family]?.[col];
+      const best = bestAll[col];
       const isBest = best != null && Math.abs(v - best) < 1e-6;
       cell.getElement().classList.toggle("best", isBest);
       return v.toFixed(2);
