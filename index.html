@@ -70,11 +70,19 @@
     margin: 14px auto 0;
     font-size: 15px; color: var(--muted); max-width: 720px;
   }
-  .hero .authors {
-    margin-top: 24px;
-    font-size: 14px; color: var(--ink-soft);
+  .hero .authors { margin-top: 24px; }
+  .hero .authors .names {
+    margin: 0; font-size: 16px; font-weight: 500; color: var(--ink);
   }
-  .hero .authors em { font-style: italic; color: var(--muted); }
+  .hero .authors .names sup { font-size: 10px; color: var(--accent); margin-left: 1px; }
+  .hero .authors .affils {
+    margin: 4px 0 0; font-size: 13px; color: var(--ink-soft);
+  }
+  .hero .authors .affils sup { color: var(--accent); }
+  .hero .authors .corresponding {
+    margin: 6px 0 0; font-size: 11.5px; color: var(--muted);
+  }
+  .hero .authors .corresponding sup { color: var(--accent); }
 
   /* ---------- big button row ---------- */
   .btn-row {
@@ -221,7 +229,18 @@
     <h1>🛠️ <span class="accent">MUSE</span></h1>
     <p class="sub">Benchmarking Manufacturable, Functional, and Assemblable Text-to-CAD Generation</p>
     <p class="tagline">A Text-to-CAD benchmark for complex, editable B-Rep assemblies. Pairs practical design instances with structured <em>Design Specifications</em> and evaluates LLM outputs through a three-stage funnel: <strong>code check → geometric check → design-intent alignment</strong>.</p>
-    <p class="authors"><em>Anonymous Authors · single-blind review</em></p>
+    <div class="authors">
+      <p class="names">
+        Xiaoyu Dong<sup>1</sup> &nbsp;·&nbsp;
+        Zhi Li<sup>2,*</sup> &nbsp;·&nbsp;
+        Xiao-Ming Wu<sup>1,*</sup>
+      </p>
+      <p class="affils">
+        <sup>1</sup> The Hong Kong Polytechnic University &nbsp;&nbsp;
+        <sup>2</sup> Curvature Flow Co., Ltd.
+      </p>
+      <p class="corresponding"><sup>*</sup> Co-corresponding authors</p>
+    </div>
 
     <nav class="btn-row">
       <a class="btn primary" href="./leaderboard.html">🏆 Leaderboard</a>
@@ -318,7 +337,7 @@
     <h3 class="h-big">If you use MUSE, please cite</h3>
     <pre class="cite">@misc{muse2026,
   <span class="k">title</span>  = <span class="s">{MUSE: Benchmarking Manufacturable, Functional, and Assemblable Text-to-CAD Generation}</span>,
-  <span class="k">author</span> = <span class="s">{Anonymous}</span>,
+  <span class="k">author</span> = <span class="s">{Dong, Xiaoyu and Li, Zhi and Wu, Xiao-Ming}</span>,
   <span class="k">year</span>   = <span class="s">{2026}</span>,
   <span class="k">url</span>    = <span class="s">{https://dong7313.github.io/muse-benchmark/}</span>
 }</pre>
