@@ -3,10 +3,11 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>MUSE — Multimodal Understanding of Spatial Engineering</title>
-<meta name="description" content="MUSE benchmark: testing LLMs on generating valid, assemblable CadQuery code from natural-language design specs. 106 cases, judged by Gemini-3.1-Pro across a three-stage funnel." />
-<meta property="og:title" content="MUSE — A benchmark for LLM-generated CAD" />
-<meta property="og:description" content="Testing LLMs on generating valid, assemblable CadQuery from natural-language design specs." />
+<title>MUSE — Benchmarking Manufacturable, Functional, and Assemblable Text-to-CAD Generation</title>
+<meta name="description" content="MUSE: a Text-to-CAD benchmark for complex, editable B-Rep assemblies. Pairs practical design instances with structured Design Specifications; evaluates LLM outputs through code check → geometric check → design-intent alignment." />
+<meta property="og:title" content="MUSE — Benchmarking Manufacturable, Functional, and Assemblable Text-to-CAD" />
+<meta property="og:description" content="A Text-to-CAD benchmark beyond geometric similarity. 106 design instances, 15+ LLMs, three-stage funnel evaluation." />
+<meta property="og:image" content="./figure1.png" />
 <meta property="og:type" content="website" />
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -109,6 +110,23 @@
     background: var(--muted); color: white; margin-left: 4px; text-transform: uppercase; letter-spacing: 0.05em;
   }
 
+  /* ---------- figure banner ---------- */
+  .figband {
+    background: var(--panel);
+    border-bottom: 1px solid var(--line);
+    padding: 40px 24px 28px;
+  }
+  .figband-inner { max-width: 1080px; margin: 0 auto; text-align: center; }
+  .figband img {
+    max-width: 100%; height: auto; display: block; margin: 0 auto;
+    border-radius: 10px;
+  }
+  .figband .fig-caption {
+    margin: 18px auto 0; max-width: 880px;
+    font-size: 13.5px; color: var(--ink-soft); line-height: 1.55;
+  }
+  .figband .fig-caption strong { color: var(--ink); }
+
   /* ---------- sections ---------- */
   section.band { padding: 64px 24px; }
   section.band.alt { background: var(--panel); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
@@ -201,8 +219,8 @@
   <div class="hero-inner">
     <span class="tag">NeurIPS 2026 · Datasets &amp; Benchmarks Submission</span>
     <h1>🛠️ <span class="accent">MUSE</span></h1>
-    <p class="sub">Multimodal Understanding of Spatial Engineering</p>
-    <p class="tagline">A benchmark for testing LLMs on generating <strong>valid, assemblable CadQuery code</strong> from natural-language design specs. 106 cases · 15+ models · judged by Gemini-3.1-Pro across a three-stage funnel.</p>
+    <p class="sub">Benchmarking Manufacturable, Functional, and Assemblable Text-to-CAD Generation</p>
+    <p class="tagline">A Text-to-CAD benchmark for complex, editable B-Rep assemblies. Pairs practical design instances with structured <em>Design Specifications</em> and evaluates LLM outputs through a three-stage funnel: <strong>code check → geometric check → design-intent alignment</strong>.</p>
     <p class="authors"><em>Anonymous Authors · single-blind review</em></p>
 
     <nav class="btn-row">
@@ -214,13 +232,22 @@
   </div>
 </section>
 
+<!-- ===================== FIGURE 1 BANNER ===================== -->
+<section class="figband">
+  <div class="figband-inner">
+    <img src="./figure1.png" alt="A subset of design instances from the MUSE dataset" />
+    <p class="fig-caption"><strong>Figure 1.</strong> A subset of design instances from the MUSE dataset — practical, multi-component CAD assemblies that must satisfy real engineering constraints, not just look like the reference shape.</p>
+  </div>
+</section>
+
 <!-- ===================== ABSTRACT ===================== -->
 <section class="band">
   <div class="section-inner">
-    <h2>Overview</h2>
-    <h3 class="h-big">Can LLMs generate CAD that actually fits together?</h3>
-    <p>Existing code-generation benchmarks reward functional correctness (does the program return the right number?) but say nothing about spatial reasoning. MUSE evaluates LLMs on a sharper task: given a natural-language design spec — "a four-legged stool, ~45 cm tall, with cross-stretchers" — can the model write CadQuery code that produces a <strong>watertight, manifold, self-intersection-free</strong> solid that is also <strong>assemblable, functional, and manufacturable</strong>?</p>
-    <p>We curate 106 cases spanning furniture, fixtures, tools, and containers, each paired with a reference STEP file, a 4-view engineering drawing, a 3D render, and a domain-grounded rubric. Candidate code is executed in a sandbox, hard geometric checks are run via OpenCascade, and surviving samples are scored by a vision-language judge (Gemini-3.1-Pro) against the rubric. A sample that fails any upstream check is forced to <code>0</code> on every downstream metric — the funnel exposes <em>where</em> each model breaks down.</p>
+    <h2>Abstract</h2>
+    <h3 class="h-big">Beyond geometric similarity, toward engineering usability</h3>
+    <p>Large language models (LLMs) have recently advanced text-driven 3D generation, yet <strong>Text-to-CAD</strong> remains far from supporting industrial product design. Existing benchmarks focus primarily on generating isolated primitive CAD models and evaluate them using geometric similarity metrics that fail to capture <em>functionality, manufacturability, and assemblability</em>.</p>
+    <p>To address this gap, we introduce <strong>MUSE</strong>, a Text-to-CAD benchmark focused on complex, editable boundary representation (B-Rep) assemblies. MUSE pairs practical design instances with structured <em>Design Specifications</em> and evaluates generated models through a three-stage protocol: <strong>code check</strong>, <strong>geometric check</strong>, and <strong>design-intent alignment</strong>. The final stage uses design-specific rubrics to assess functionality, manufacturability, and assemblability, moving beyond shape matching toward practical design quality.</p>
+    <p>To enable scalable evaluation, we use a rubric-based visual language model (VLM) judge and validate its reliability through human annotation. Experiments on closed-source and open-source LLMs reveal a clear <strong>failure cascade</strong> from executable code to valid geometry and finally to engineering-ready design — even the strongest models achieve limited success on fine-grained engineering criteria. Together, MUSE provides a realistic benchmark and evaluation framework for advancing Text-to-CAD from geometric generation toward true engineering design.</p>
   </div>
 </section>
 
