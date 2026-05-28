@@ -201,6 +201,23 @@
     text-align: right; padding: 14px 16px; font-size: 13px; background: #fafafa;
   }
 
+  /* ---------- contact ---------- */
+  .contacts {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+    margin-top: 24px;
+  }
+  .contact-card {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
+    padding: 20px; display: flex; flex-direction: column; gap: 4px;
+  }
+  .contact-card .contact-name { font-size: 16px; font-weight: 700; color: var(--ink); }
+  .contact-card .contact-affil { font-size: 13px; color: var(--ink-soft); }
+  .contact-card .contact-mail {
+    margin-top: 6px; font-family: 'JetBrains Mono', monospace; font-size: 12.5px;
+    word-break: break-all;
+  }
+  @media (max-width: 800px) { .contacts { grid-template-columns: 1fr; } }
+
   /* ---------- citation block ---------- */
   .cite {
     background: #111827; color: #e5e7eb; border-radius: 12px;
@@ -344,6 +361,31 @@
   <span class="k">primaryClass</span>  = <span class="s">{cs.AI}</span>,
   <span class="k">url</span>           = <span class="s">{https://arxiv.org/abs/2605.28579}</span>
 }</pre>
+  </div>
+</section>
+
+<!-- ===================== CONTACT ===================== -->
+<section class="band">
+  <div class="section-inner">
+    <h2>Contact</h2>
+    <h3 class="h-big">Questions or collaborations? Reach out</h3>
+    <div class="contacts">
+      <div class="contact-card">
+        <span class="contact-name">Xiaoyu Dong</span>
+        <span class="contact-affil">The Hong Kong Polytechnic University</span>
+        <a class="contact-mail" href="mailto:dongxiaoyu7313@gmail.com">dongxiaoyu7313@gmail.com</a>
+      </div>
+      <div class="contact-card">
+        <span class="contact-name">Zhi Li</span>
+        <span class="contact-affil">Curvature Flow Co., Ltd.</span>
+        <a class="contact-mail" href="mailto:albert.li@crvflow.com">albert.li@crvflow.com</a>
+      </div>
+      <div class="contact-card">
+        <span class="contact-name">Xiao-Ming Wu</span>
+        <span class="contact-affil">The Hong Kong Polytechnic University</span>
+        <a class="contact-mail" href="mailto:xiao-ming.wu@polyu.edu.hk">xiao-ming.wu@polyu.edu.hk</a>
+      </div>
+    </div>
   </div>
 </section>
 
